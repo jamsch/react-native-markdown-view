@@ -13,11 +13,11 @@ import DefaultStyles from './styles';
 
 import type { ImageNode, Rules, Styles } from './types';
 
-const renderNode = (node, output, state, render) => render(node, output, state, styles);
+const renderNode = (render, styles) => (node, output, state) => render(node, output, state, styles);
 
 function simpleMarkdownRule(rule, styles) {
   const { render, ...properties } = rule;
-  const reactRender = render ? { react: renderNode(node, output, state, render) } : null;
+  const reactRender = render ? { react: renderNode(render, styles) } : null;
   return { ...properties, ...reactRender };
 }
 
