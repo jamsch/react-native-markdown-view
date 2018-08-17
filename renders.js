@@ -66,9 +66,7 @@ function renderTableCell(cell, row, column, rowCount, columnCount, output, state
 
   return (
     <Cell rowId={row} id={column} key={column} style={cellStyle}>
-      <Text style={contentStyle}>
-        {output(cell, state)}
-      </Text>
+      <Text style={contentStyle}>{output(cell, state)}</Text>
     </Cell>
   );
 }
@@ -85,12 +83,21 @@ function paragraphRenderer() {
   };
 }
 
-function textContentRenderer(styleName, styleName2) {
-  return (node: InlineContentNode, output: OutputFunction, state: RenderState, styles: RenderStyles) => (
-    <Text key={state.key} style={styleName2 ? [styles[styleName], styles[styleName2]] : styles[styleName]}>
-      {typeof node.content === 'string' ? node.content : output(node.content, state)}
-    </Text>
-  );
+export function textContentRenderer(styleName, styleName2, additionalStyles) {
+  return (node: InlineContentNode, output: OutputFunction, state: RenderState, styles: RenderStyles) => {
+    const textStyles = [styles[styleName]];
+    if (styleName2) {
+      textStyles.push(styles[styleName2]);
+    }
+    if (additionalStyles) {
+      textStyles.push(additionalStyles);
+    }
+    return (
+      <Text key={state.key} style={textStyles}>
+        {typeof node.content === 'string' ? node.content : output(node.content, state)}
+      </Text>
+    );
+  };
 }
 
 function either(a, b) {
@@ -137,9 +144,7 @@ export default Object.freeze({
       {node.items.map((item, i) => (
         <View key={i} style={styles.listItem}>
           {node.ordered ? (
-            <Text style={styles.listItemNumber}>
-              {`${i + 1}.`}
-            </Text>
+            <Text style={styles.listItemNumber}>{`${i + 1}.`}</Text>
           ) : (
             <Text style={styles.listItemBullet}>
               {styles.listItemBullet && styles.listItemBullet.content ? styles.listItemBullet.content : '\u2022'}
