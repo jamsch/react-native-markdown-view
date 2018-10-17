@@ -71,7 +71,7 @@ function renderTableCell(cell, row, column, rowCount, columnCount, output, state
   );
 }
 
-function paragraphRenderer() {
+export function paragraphRenderer() {
   const renderText = textContentRenderer('paragraph');
 
   return (node: InlineContentNode, output: OutputFunction, state: RenderState, styles: RenderStyles) => {
