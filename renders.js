@@ -71,8 +71,8 @@ function renderTableCell(cell, row, column, rowCount, columnCount, output, state
   );
 }
 
-export function paragraphRenderer() {
-  const renderText = textContentRenderer('paragraph');
+export function paragraphRenderer(additionalStyles) {
+  const renderText = textContentRenderer('paragraph', additionalStyles);
 
   return (node: InlineContentNode, output: OutputFunction, state: RenderState, styles: RenderStyles) => {
     if (node.content instanceof Array && node.content.length === 1 && node.content[0].type === 'image') {
