@@ -1,6 +1,6 @@
 /* @flow */
 
-import React from 'react';
+import React, { Fragment } from 'react';
 
 import { Image, Text, View } from 'react-native';
 
@@ -139,24 +139,40 @@ export default Object.freeze({
       </Text>
     );
   },
-  list: (node: ListNode, output: OutputFunction, state: RenderState, styles: RenderStyles) => (
-    <View key={state.key} style={styles.list}>
-      {node.items.map((item, i) => (
-        <View key={i} style={styles.listItem}>
+  list: (node: ListNode, output: OutputFunction, state: RenderState, styles: RenderStyles) => {
+    if (state.nestedLevel) {
+      return node.items.map((item, i) => (
+        <Fragment key={i}>
           {node.ordered ? (
-            <Text style={styles.listItemNumber}>{`${i + 1}.`}</Text>
+            <Text style={[styles.listItemNumber, { marginLeft: 10*state.nestedLevel }]}>{"\n"}{`${i + 1}. `}</Text>
           ) : (
-            <Text style={styles.listItemBullet}>
-              {styles.listItemBullet && styles.listItemBullet.content ? styles.listItemBullet.content : '\u2022'}
-            </Text>
+            <Text style={[styles.listItemBullet, { marginLeft: 10*state.nestedLevel }]}>{"\n"}{styles.listItemBullet && styles.listItemBullet.content ? styles.listItemBullet.content : '\u2022'}{" "}</Text>
           )}
-          <Text style={node.ordered ? styles.listItemOrderedContent : styles.listItemUnorderedContent}>
-            {output(item, state)}
-          </Text>
-        </View>
-      ))}
-    </View>
-  ),
+           <Text style={node.ordered ? styles.listItemOrderedContent : styles.listItemUnorderedContent}>
+              {output(item, {...state, nestedLevel: state.nestedLevel + 1 })}
+            </Text>
+        </Fragment>
+      ));
+    }
+    return (
+      <View key={state.key} style={styles.list}>
+        {node.items.map((item, i) => (
+          <View key={i} style={styles.listItem}>
+            {node.ordered ? (
+              <Text style={styles.listItemNumber}>{`${i + 1}.`}</Text>
+            ) : (
+              <Text style={styles.listItemBullet}>
+                {styles.listItemBullet && styles.listItemBullet.content ? styles.listItemBullet.content : '\u2022'}
+              </Text>
+            )}
+            <Text style={node.ordered ? styles.listItemOrderedContent : styles.listItemUnorderedContent}>            
+              {output(item, {...state, nestedLevel: state.nestedLevel ? state.nestedLevel + 1 : 1 })}
+            </Text>
+          </View>
+        ))}
+      </View>
+    )
+  },
   newline: (node: EmptyNode, output: OutputFunction, state: RenderState, styles: RenderStyles) => (
     <Text key={state.key} style={styles.newline}>
       {'\n'}
